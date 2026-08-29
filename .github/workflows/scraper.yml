@@ -1,0 +1,36 @@
+name: Auto Scrape and Update
+
+on:
+  schedule:
+    # يعمل تلقائياً كل 3 ساعات
+    - cron: '0 */3 * * *'
+  workflow_dispatch: # يتيح لك تشغيله يدوياً متى شئت من زر في جيت هب
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Scraper Script
+        run: python scraper.py
+
+      - name: Commit and push updated files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add recruitment.db index.html
+          git commit -m "Update ads automatically: $(date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git push
+
