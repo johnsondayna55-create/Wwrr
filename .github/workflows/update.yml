@@ -21,7 +21,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install requests beautifulsoup4
 
       - name: Run scraper script
         run: python scraper.py
@@ -31,5 +31,5 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add index.html recruitment.db
-          git diff --staged --quiet || git commit -m "تحديث تلقائي للإعلانات"
+          git diff --staged --quiet || git commit -m "تحديث تلقائي للإعلانات والحقيقية"
           git push
