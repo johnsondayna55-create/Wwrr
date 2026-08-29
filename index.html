@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إعلانات الاستقدام والتنازل المباشرة</title>
+    <title>منظومة إعلانات الاستقدام والتنازل المباشرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b; --primary: #2563eb; --primary-hover: #1d4ed8; --border: #e2e8f0; --tanazul-bg: #dcfce7; --tanazul-text: #15803d; --istiqdam-bg: #e0f2fe; --istiqdam-text: #0369a1; }
@@ -50,9 +50,9 @@
             <button class="theme-toggle" onclick="toggleTheme()">🌓 وضع العرض</button>
         </header>
         <div class="stats-grid">
-            <div class="stat-card"><h3>إجمالي الإعلانات</h3><div class="val">0</div></div>
-            <div class="stat-card"><h3>عروض التنازل ونقل الكفالة</h3><div class="val">0</div></div>
-            <div class="stat-card"><h3>طلبات الاستقدام</h3><div class="val">0</div></div>
+            <div class="stat-card"><h3>إجمالي الإعلانات</h3><div class="val">4</div></div>
+            <div class="stat-card"><h3>عروض التنازل ونقل الكفالة</h3><div class="val">3</div></div>
+            <div class="stat-card"><h3>طلبات الاستقدام</h3><div class="val">1</div></div>
         </div>
         <div class="controls">
             <input type="text" class="search-box" id="searchInput" placeholder="ابحث برقم، مدينة، جنسية، أو كلمة مفتاحية...">
@@ -75,10 +75,42 @@
                 </thead>
                 <tbody id="adsTable">
                     
+                <tr data-category="تنازل">
+                    <td><span class="source-badge">حراج</span></td>
+                    <td><span class="category-badge cat-tanazul">تنازل</span></td>
+                    <td class="content-cell">متوفر عاملة منزلية جمنسية أثيوبية للتنازل، لها سنتين خبرة، تجيد الإعمال المنزلية ورعاية الأطفال، نقل كفالة فوري. المدينة: الرياض</td>
+                    <td class="date-cell">2026-08-29 21:52</td>
+                    <td><a href="https://wa.me/966551234567" target="_blank" class="wa-btn">💬 واتساب (0551234567)</a></td>
+                </tr>
+        
+                <tr data-category="تنازل">
+                    <td><span class="source-badge">تليجرام</span></td>
+                    <td><span class="category-badge cat-tanazul">تنازل</span></td>
+                    <td class="content-cell">تنازل كفالة عاملة منزلية كينية نظيفة وممتازة في الطبخ، التواصل الجاد للرغبة في نقل الكفالة الشروط مطابقة للنظام. المدينة: جدة</td>
+                    <td class="date-cell">2026-08-29 21:52</td>
+                    <td><a href="https://wa.me/966567891234" target="_blank" class="wa-btn">💬 واتساب (0567891234)</a></td>
+                </tr>
+        
+                <tr data-category="استقدام">
+                    <td><span class="source-badge">حراج</span></td>
+                    <td><span class="category-badge cat-istiqdam">استقدام</span></td>
+                    <td class="content-cell">مطلوب استقدام عمالة مهنية لمؤسسة مقاولات برواتب مجزية وتأمين شامل حسب الأنظمة الرسمية. المدينة: الدمام</td>
+                    <td class="date-cell">2026-08-29 21:52</td>
+                    <td><a href="https://wa.me/966533344556" target="_blank" class="wa-btn">💬 واتساب (0533344556)</a></td>
+                </tr>
+        
+                <tr data-category="تنازل">
+                    <td><span class="source-badge">تليجرام</span></td>
+                    <td><span class="category-badge cat-tanazul">تنازل</span></td>
+                    <td class="content-cell">متوفر سائق خاص للتنازل رخصة سعودية سارية، يمتلك معرفة تامة بطرق وشوارع المدينة، جاهز للتنازل الفوري. المدينة: مكة المكرمة</td>
+                    <td class="date-cell">2026-08-29 21:52</td>
+                    <td><a href="https://wa.me/966598877665" target="_blank" class="wa-btn">💬 واتساب (0598877665)</a></td>
+                </tr>
+        
                 </tbody>
             </table>
         </div>
-        <footer>آخر تحديث آلي للنظام: 2026-08-29 21:49</footer>
+        <footer>آخر تحديث آلي للنظام: 2026-08-29 21:52</footer>
     </div>
     <script>
         function toggleTheme() {
