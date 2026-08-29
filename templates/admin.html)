@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | وكالة الناقل</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f6f9; margin: 0; padding: 0; color: #333; }
+        header { background: #1e3c72; color: white; padding: 20px; text-align: center; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        .form-box, .list-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.06); margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+        textarea { resize: vertical; height: 100px; }
+        button { background: #2a5298; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; }
+        button:hover { background: #1e3c72; }
+        .danger-btn { background: #d9534f; margin-top: 10px; }
+        .danger-btn:hover { background: #c9302c; }
+        .flash { padding: 12px; margin-bottom: 15px; border-radius: 6px; font-weight: bold; }
+        .flash.success { background: #d4edda; color: #155724; }
+        .flash.error { background: #f8d7da; color: #721c24; }
+        .flash.warning { background: #fff3cd; color: #856404; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: right; font-size: 13px; }
+        th { background: #f8f9fa; }
+        .nav-link { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #2a5298; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚙️ لوحة تحكم وكالة الناقل - الإضافة والتحكم اليدوي</h1>
+    </header>
+
+    <div class="container">
+        <a href="/" class="nav-link">⬅ العودة إلى الواجهة الرئيسية للموقع</a>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-box">
+            <h2>➕ إضافة إعلان استقدام أو تنازل جديد يدويّاً</h2>
+            <form method="POST">
+                <input type="hidden" name="action" value="add">
+                <div class="form-group">
+                    <label>عنوان الإعلان:</label>
+                    <input type="text" name="title" required placeholder="مثال: تنازل خادمة تنزانية ترغب العمل بجد">
+                </div>
+                <div class="form-group">
+                    <label>التصنيف:</label>
+                    <select name="category">
+                        <option value="تنازل ونقل كفالة">تنازل ونقل كفالة</option>
+                        <option value="استقدام وتأشيرات">استقدام وتأشيرات</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف للتواصل (يبدأ بـ 05 أو رقم سعودي):</label>
+                    <input type="text" name="phone" required placeholder="0501234567">
+                </div>
+                <div class="form-group">
+                    <label>تفاصيل الإعلان الكاملة:</label>
+                    <textarea name="content" required placeholder="اكتب تفاصيل الجنسية، الخبرة، الشروط، الملاحظات..."></textarea>
+                </div>
+                <button type="submit">نشر الإعلان فوراً</button>
+            </form>
+        </div>
+
+        <div class="form-box">
+            <h2>🛠️ إدارة قاعدة البيانات</h2>
+            <form method="POST" onsubmit="return confirm('هل أنت متأكد من حذف جميع الإعلانات؟');">
+                <input type="hidden" name="action" value="clear">
+                <button type="submit" class="danger-btn">🗑️ مسح وتفريغ كافة الإعلانات</button>
+            </form>
+        </div>
+
+        <div class="list-box">
+            <h2>📋 سجل الإعلانات الحالية في النظام ({{ ads|length }})</h2>
+            {% if ads %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>المعرف</th>
+                        <th>العنوان</th>
+                        <th>التصنيف</th>
+                        <th>الهاتف</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ad in ads %}
+                    <tr>
+                        <td>{{ ad.id }}</td>
+                        <td>{{ ad.title }}</td>
+                        <td>{{ ad.category }}</td>
+                        <td>{{ ad.phone }}</td>
+                        <td>{{ ad.timestamp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>لا توجد إعلانات مسجلة في قاعدة البيانات حالياً.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
