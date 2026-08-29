@@ -6,6 +6,26 @@ app = Flask(__name__)
 app.secret_key = "alnaqil_secret_key_2026"
 DB_NAME = "recruitment.db"
 
+def setup_database():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS ads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            source_name TEXT,
+            source_url TEXT,
+            title TEXT,
+            content TEXT,
+            category TEXT,
+            phone TEXT,
+            whatsapp_link TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(content)
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
@@ -13,6 +33,7 @@ def get_db_connection():
 
 @app.route('/')
 def index():
+    setup_database()
     conn = get_db_connection()
     search_query = request.args.get('q', '').strip()
     category_filter = request.args.get('cat', '').strip()
@@ -36,6 +57,7 @@ def index():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    setup_database()
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'add':
@@ -81,5 +103,6 @@ def admin():
     return render_template('admin.html', ads=ads)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
-
+    setup_database()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
