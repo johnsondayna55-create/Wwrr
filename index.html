@@ -6,57 +6,37 @@
     <title>لوحة إعلانات الاستقدام والتنازل المباشرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b;
-            --primary: #2563eb; --primary-hover: #1d4ed8; --border: #e2e8f0;
-            --tanazul-bg: #dcfce7; --tanazul-text: #15803d;
-            --istiqdam-bg: #e0f2fe; --istiqdam-text: #0369a1;
-        }
-        [data-theme="dark"] {
-            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8;
-            --primary: #3b82f6; --primary-hover: #2563eb; --border: #334155;
-            --tanazul-bg: #064e3b; --tanazul-text: #6ee7b7;
-            --istiqdam-bg: #0369a1; --istiqdam-text: #bae6fd;
-        }
+        :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --muted: #64748b; --primary: #2563eb; --primary-hover: #1d4ed8; --border: #e2e8f0; --tanazul-bg: #dcfce7; --tanazul-text: #15803d; --istiqdam-bg: #e0f2fe; --istiqdam-text: #0369a1; }
+        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --muted: #94a3b8; --primary: #3b82f6; --primary-hover: #2563eb; --border: #334155; --tanazul-bg: #064e3b; --tanazul-text: #6ee7b7; --istiqdam-bg: #0369a1; --istiqdam-text: #bae6fd; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; transition: background .3s; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; }
         .container { max-width: 1300px; margin: 0 auto; background: var(--card); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid var(--border); }
-        
         header { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; padding: 24px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         header h1 { font-size: 22px; font-weight: 800; }
         header p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
-        
         .theme-toggle { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-family: 'Tajawal'; font-weight: 700; }
-        
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 20px 30px 0; }
         .stat-card { background: var(--bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; }
         .stat-card h3 { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
         .stat-card .val { font-size: 20px; font-weight: 800; color: var(--primary); }
-
         .controls { padding: 20px 30px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border); }
         .search-box { flex: 1; min-width: 250px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font-family: 'Tajawal'; font-size: 14px; outline: none; }
-        
         .filter-tabs { display: flex; gap: 8px; }
         .tab-btn { padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-family: 'Tajawal'; font-weight: 700; font-size: 13px; }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: right; }
         th, td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
         th { background: var(--bg); font-weight: 700; color: var(--muted); font-size: 13px; }
         tr:hover { background: rgba(0,0,0,0.02); }
-        
         .source-badge { background: var(--bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
         .category-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
         .cat-tanazul { background: var(--tanazul-bg); color: var(--tanazul-text); }
         .cat-istiqdam { background: var(--istiqdam-bg); color: var(--istiqdam-text); }
-        
         .wa-btn { background-color: #22c55e; color: white; padding: 7px 14px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
         .wa-btn:hover { background-color: #16a34a; }
-        
         .content-cell { line-height: 1.6; max-width: 450px; white-space: pre-line; }
         .date-cell { font-size: 12px; color: var(--muted); white-space: nowrap; }
-        
         footer { text-align: center; padding: 20px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); }
     </style>
 </head>
@@ -69,13 +49,11 @@
             </div>
             <button class="theme-toggle" onclick="toggleTheme()">🌓 وضع العرض</button>
         </header>
-        
         <div class="stats-grid">
-            <div class="stat-card"><h3>إجمالي الإعلانات</h3><div class="val">1</div></div>
-            <div class="stat-card"><h3>عروض التنازل ونقل الكفالة</h3><div class="val">1</div></div>
+            <div class="stat-card"><h3>إجمالي الإعلانات</h3><div class="val">0</div></div>
+            <div class="stat-card"><h3>عروض التنازل ونقل الكفالة</h3><div class="val">0</div></div>
             <div class="stat-card"><h3>طلبات الاستقدام</h3><div class="val">0</div></div>
         </div>
-
         <div class="controls">
             <input type="text" class="search-box" id="searchInput" placeholder="ابحث برقم، مدينة، جنسية، أو كلمة مفتاحية...">
             <div class="filter-tabs">
@@ -84,7 +62,6 @@
                 <button class="tab-btn" onclick="filterCat('استقدام', this)">استقدام</button>
             </div>
         </div>
-        
         <div class="table-responsive">
             <table>
                 <thead>
@@ -97,20 +74,12 @@
                     </tr>
                 </thead>
                 <tbody id="adsTable">
-                    <tr data-category="تنازل">
-                        <td><span class="source-badge">نظام</span></td>
-                        <td><span class="category-badge cat-tanazul">تنازل</span></td>
-                        <td class="content-cell">تم ضبط واجهة الموقع بنجاح. هذا إعلان تجريبي، وسيقوم السكريبت بتحديث البيانات تلقائياً.</td>
-                        <td class="date-cell">2026-08-30</td>
-                        <td><a href="https://wa.me/966500000000" target="_blank" class="wa-btn">💬 واتساب تجريبي</a></td>
-                    </tr>
+                    
                 </tbody>
             </table>
         </div>
-        
-        <footer>النظام يعمل بنجاح</footer>
+        <footer>آخر تحديث آلي للنظام: 2026-08-29 21:49</footer>
     </div>
-
     <script>
         function toggleTheme() {
             const html = document.documentElement;
@@ -122,11 +91,9 @@
         if(localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
-
         const searchInput = document.getElementById('searchInput');
         const rows = document.querySelectorAll('#adsTable tr');
         let currentCat = 'all';
-
         function filterAds() {
             const query = searchInput.value.toLowerCase().trim();
             rows.forEach(row => {
@@ -137,9 +104,7 @@
                 row.style.display = (matchCat && matchText) ? '' : 'none';
             });
         }
-
         searchInput.addEventListener('input', filterAds);
-
         function filterCat(cat, btn) {
             currentCat = cat;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -149,5 +114,3 @@
     </script>
 </body>
 </html>
-
-
