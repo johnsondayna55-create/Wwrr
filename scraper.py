@@ -1,6 +1,9 @@
 import sqlite3
 import re
+import requests
+from bs4 import BeautifulSoup
 from datetime import datetime
+from typing import Optional, Tuple
 
 DB_NAME = "recruitment.db"
 HTML_FILE = "index.html"
@@ -23,25 +26,80 @@ def setup_database():
     conn.commit()
     conn.close()
 
-def add_default_ads():
-    # عروض أساسية حقيقية لضمان عمل المنظومة فوراً وبشكل احترافي
-    sample_ads = [
-        ("حراج", "متوفر عاملة منزلية جمنسية أثيوبية للتنازل، لها سنتين خبرة، تجيد الإعمال المنزلية ورعاية الأطفال، نقل كفالة فوري. المدينة: الرياض", "تنازل", "0551234567", "https://wa.me/966551234567"),
-        ("تليجرام", "تنازل كفالة عاملة منزلية كينية نظيفة وممتازة في الطبخ، التواصل الجاد للرغبة في نقل الكفالة الشروط مطابقة للنظام. المدينة: جدة", "تنازل", "0567891234", "https://wa.me/966567891234"),
-        ("حراج", "مطلوب استقدام عمالة مهنية لمؤسسة مقاولات برواتب مجزية وتأمين شامل حسب الأنظمة الرسمية. المدينة: الدمام", "استقدام", "0533344556", "https://wa.me/966533344556"),
-        ("تليجرام", "متوفر سائق خاص للتنازل رخصة سعودية سارية، يمتلك معرفة تامة بطرق وشوارع المدينة، جاهز للتنازل الفوري. المدينة: مكة المكرمة", "تنازل", "0598877665", "https://wa.me/966598877665")
+def extract_phone_and_whatsapp(text: str) -> Tuple[str, str]:
+    if not text:
+        return "", ""
+    clean_text = re.sub(r'[\s\-_\.]', '', text)
+    patterns = [r'(?:\+?966|0)?5\d{8}', r'05\d{8}', r'\+9665\d{8}', r'9665\d{8}']
+    for pattern in patterns:
+        match = re.search(pattern, clean_text)
+        if match:
+            raw = match.group(0)
+            if raw.startswith('05'):
+                clean = '966' + raw[1:]
+            elif raw.startswith('+966'):
+                clean = raw[1:]
+            elif raw.startswith('966'):
+                clean = raw
+            else:
+                clean = '966' + raw[-9:]
+            display = '0' + clean[3:] if clean.startswith('966') else raw
+            return display, f"https://wa.me/{clean}"
+    return "", ""
+
+def classify_ad(text: str) -> Optional[str]:
+    if not text or not text.strip():
+        return None
+    text_lower = text.lower().strip()
+    negative = [r'أبحث\s*عن', r'ابحث\s*عن', r'محتاج\s*وظيفة', r'ابغى\s*شغل', r'أدور\s*كفيل', r'عايز\s*شغل', r'محتاج\s*كفيل', r'أريد\s*وظيفة', r'أبغى\s*وظيفة', r'مطلوب\s*كفيل', r'ابي\s*شغل']
+    for pat in negative:
+        if re.search(pat, text_lower):
+            return None
+    if re.search(r'تنازل|نقل\s*كفالة|صك\s*تنازل|للتنازل|تخارج', text_lower):
+        return "تنازل"
+    if re.search(r'استقدام|تأشيرات|تأشيرة|مكتب\s*استقدام', text_lower):
+        return "استقدام"
+    return "تنازل"
+
+def scrape_multiple_sources():
+    # مصادر متعددة ومتنوعة لجلب العروض الحقيقية من أكثر من جهة
+    sources_list = [
+        ("منصة التنازل الأولى", "https://t.me/s/tanazul_KSA_1"),
+        ("شبكة نقل الكفالة", "https://t.me/s/NaqlKafala"),
+        ("عروض العمالة المنزلية", "https://t.me/s/KhadamatKSA")
     ]
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0"}
     
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    for source, content, category, phone, wa_link in sample_ads:
+    
+    for source_name, url in sources_list:
         try:
-            cursor.execute('''
-                INSERT OR IGNORE INTO ads (source, content, category, phone, whatsapp_link)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (source, content, category, phone, wa_link))
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code != 200:
+                continue
+            soup = BeautifulSoup(response.text, 'html.parser')
+            messages = soup.find_all('div', class_='tgme_widget_message_text')
+            
+            for msg in messages:
+                text = msg.get_text(separator="\n").strip()
+                if len(text) < 20:
+                    continue
+                category = classify_ad(text)
+                if not category:
+                    continue
+                phone, wa_link = extract_phone_and_whatsapp(text)
+                
+                try:
+                    cursor.execute('''
+                        INSERT OR IGNORE INTO ads (source, content, category, phone, whatsapp_link)
+                        VALUES (?, ?, ?, ?, ?)
+                    ''', (source_name, text, category, phone, wa_link))
+                except Exception:
+                    pass
         except Exception:
             pass
+            
     conn.commit()
     conn.close()
 
@@ -99,7 +157,7 @@ def update_html_file():
         .filter-tabs {{ display: flex; gap: 8px; }}
         .tab-btn {{ padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-family: 'Tajawal'; font-weight: 700; font-size: 13px; }}
         .tab-btn.active {{ background: var(--primary); color: white; border-color: var(--primary); }}
-        .table-responsive {{ width: 100%; overflow-x: auto; }}
+        .table-responsive {{ window: 100%; overflow-x: auto; }}
         table {{ width: 100%; border-collapse: collapse; text-align: right; }}
         th, td {{ padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }}
         th {{ background: var(--bg); font-weight: 700; color: var(--muted); font-size: 13px; }}
@@ -195,7 +253,7 @@ def update_html_file():
 
 if __name__ == "__main__":
     setup_database()
-    add_default_ads()
+    scrape_multiple_sources()
     update_html_file()
-    print("تم تحديث النظام وإضافة العروض بنجاح")
+    print("تم سحب وتجميع الإعلانات من جميع المصادر بنجاح")
 
