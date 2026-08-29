@@ -1,11 +1,9 @@
 import sqlite3
 import re
+import requests
+from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import Optional, Tuple
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-import time
 
 DB_NAME = "recruitment.db"
 HTML_FILE = "index.html"
@@ -63,37 +61,32 @@ def classify_ad(text: str) -> Optional[str]:
         return "استقدام"
     return "تنازل"
 
-def scrape_with_browser():
-    # إعداد المحاكي البشري (متصفح وهمي يعمل في الخلفية)
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("window-size=1920,1080")
-    # محاكاة بصمة متصفح حقيقي لكي لا يتم حظر المحاكي
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-
-    driver = webdriver.Chrome(options=chrome_options)
-    
-    # القنوات والمصادر المفتوحة التي يتصفحها المحاكي
-    urls = [
-        ("منصة التنازل الأولى", "https://t.me/s/tanazul_KSA_1"),
-        ("شبكة نقل الكفالة", "https://t.me/s/NaqlKafala")
+def scrape_real_ads():
+    # مصادر وقنوات حقيقية متعددة لعروض التنازل والاستقدام
+    sources_list = [
+        ("قناة عروض التنازل الكبرى", "https://t.me/s/tanazul_KSA_1"),
+        ("شبكة نقل الكفالة والعمالة", "https://t.me/s/NaqlKafala")
     ]
+    
+    # محاكاة بصمة متصفح حقيقي تماماً لتجاوز أي حماية
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept-Language": "ar-SA,ar;q=0.9,en-US;q=0.8,en;q=0.7"
+    }
     
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-
-    for source_name, url in urls:
+    
+    for source_name, url in sources_list:
         try:
-            driver.get(url)
-            # محاكاة انتظار بشري لتحميل محتوى الصفحة بالكامل
-            time.sleep(3)
+            response = requests.get(url, headers=headers, timeout=15)
+            if response.status_code != 200:
+                continue
+            soup = BeautifulSoup(response.text, 'html.parser')
+            messages = soup.find_all('div', class_='tgme_widget_message_text')
             
-            messages = driver.find_elements(By.CLASS_NAME, 'tgme_widget_message_text')
             for msg in messages:
-                text = msg.text.strip()
+                text = msg.get_text(separator="\n").strip()
                 if len(text) < 20:
                     continue
                 category = classify_ad(text)
@@ -109,9 +102,8 @@ def scrape_with_browser():
                 except Exception:
                     pass
         except Exception as e:
-            print(f"خطأ في تصفح {source_name}: {e}")
-
-    driver.quit()
+            print(f"خطأ في سحب المصدر {source_name}: {e}")
+            
     conn.commit()
     conn.close()
 
@@ -194,7 +186,7 @@ def update_html_file():
             </div>
             <button class="theme-toggle" onclick="toggleTheme()">🌓 وضع العرض</button>
         </header>
-        <div class="stats-grid">` + f"""
+        <div class="stats-grid">
             <div class="stat-card"><h3>إجمالي الإعلانات</h3><div class="val">{total_ads}</div></div>
             <div class="stat-card"><h3>عروض التنازل ونقل الكفالة</h3><div class="val">{total_tanazul}</div></div>
             <div class="stat-card"><h3>طلبات الاستقدام</h3><div class="val">{total_istiqdam}</div></div>
@@ -265,7 +257,7 @@ def update_html_file():
 
 if __name__ == "__main__":
     setup_database()
-    scrape_with_browser()
+    scrape_real_ads()
     update_html_file()
-    print("تم تفعيل المحاكي البشري وتحديث الإعلانات بنجاح")
+    print("تم سحب الإعلانات الحقيقية وتحديث النظام بنجاح")
 
